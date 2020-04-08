@@ -231,6 +231,12 @@ class XyPlot(_BasePlot):
     """
 
 
+class StockChart(_BasePlot):
+    """
+    An StockChart plot.
+    """
+
+
 def PlotFactory(xChart, chart):
     """
     Return an instance of the appropriate subclass of _BasePlot based on the
@@ -247,6 +253,7 @@ def PlotFactory(xChart, chart):
             qn("c:pieChart"): PiePlot,
             qn("c:radarChart"): RadarPlot,
             qn("c:scatterChart"): XyPlot,
+            qn("c:stockChart"): StockChart,
         }[xChart.tag]
     except KeyError:
         raise ValueError("unsupported plot type %s" % xChart.tag)
@@ -277,12 +284,17 @@ class PlotTypeInspector(object):
                 "PiePlot": cls._differentiate_pie_chart_type,
                 "RadarPlot": cls._differentiate_radar_chart_type,
                 "XyPlot": cls._differentiate_xy_chart_type,
+                "StockChart": cls._differentiate_stock_chart_type,
             }[plot.__class__.__name__]
         except KeyError:
             raise NotImplementedError(
                 "chart_type() not implemented for %s" % plot.__class__.__name__
             )
         return chart_type_method(plot)
+
+    @classmethod
+    def _differentiate_stock_chart_type(cls, plot):
+        return XL.STOCK_HLC
 
     @classmethod
     def _differentiate_area_3d_chart_type(cls, plot):

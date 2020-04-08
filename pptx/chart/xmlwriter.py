@@ -237,7 +237,12 @@ class _BaseSeriesXmlRewriter(object):
         plotArea, date_1904 = chartSpace.plotArea, chartSpace.date_1904
         chart_data = self._chart_data
         self._adjust_ser_count(plotArea, len(chart_data))
-        for ser, series_data in zip(plotArea.sers, chart_data):
+        try:
+            sers = plotArea.sers
+        except AttributeError:
+            sers = plotArea.xpath("./c:ser")
+
+        for ser, series_data in zip(sers, chart_data):
             self._rewrite_ser_data(ser, series_data, date_1904)
 
     def _add_cloned_sers(self, plotArea, count):
@@ -266,7 +271,12 @@ class _BaseSeriesXmlRewriter(object):
         are added to the last xChart element and cloned from the last c:ser
         element in that xChart.
         """
-        ser_count_diff = new_ser_count - len(plotArea.sers)
+        try:
+            sers = plotArea.sers
+        except AttributeError:
+            sers = plotArea.xpath("//c:ser")
+        ser_count_diff = new_ser_count - len(sers)
+
         if ser_count_diff > 0:
             self._add_cloned_sers(plotArea, ser_count_diff)
         elif ser_count_diff < 0:
